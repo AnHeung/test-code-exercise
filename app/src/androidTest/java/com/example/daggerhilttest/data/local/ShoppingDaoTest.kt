@@ -1,38 +1,41 @@
 package com.example.daggerhilttest.data.local
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.example.daggerhilttest.getOrAwaitValue
 import com.google.common.truth.Truth.assertThat
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
+import javax.inject.Inject
+import javax.inject.Named
 
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class) // 여기는 java 환경이 아니라 안드로이드 환경이기 떄문에 계측테스트를 하려면 실제 에뮬기기나 실제기기로 돌려야한다.
+//@RunWith(AndroidJUnit4::class) // 여기는 java 환경이 아니라 안드로이드 환경이기 떄문에 계측테스트를 하려면 실제 에뮬기기나 실제기기로 돌려야한다.
 @SmallTest // UnitTest
+@HiltAndroidTest
 class ShoppingDaoTest {
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this) // 테스트 인스턴스 삽입에 사용
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var database: ShoppingItemDatabase
+    @Inject
+    @Named("test_db") // TestAppModule 과 AppModule 과 같은 인스턴스를 제공하기 때문에 식별자를 설정
+    lateinit var database: ShoppingItemDatabase
     private lateinit var dao: ShoppingDao
 
     @Before
     fun setup() {
         //ram 에 저장되는 데이터 베이스
-        database = Room.inMemoryDatabaseBuilder(
-            ApplicationProvider.getApplicationContext(),
-            ShoppingItemDatabase::class.java
-        ).allowMainThreadQueries().build()
+        hiltRule.inject() //해당 명령어를 통해 annotation 붙은 변수들에게 인스턴스가 생성된다.
         dao = database.shoppingDao()
     }
 
