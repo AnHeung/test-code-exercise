@@ -3,6 +3,8 @@ package com.example.daggerhilttest.data.local
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.filters.SmallTest
 import com.example.daggerhilttest.getOrAwaitValue
+import com.example.daggerhilttest.launchFragmentInHiltContainer
+import com.example.daggerhilttest.ui.ShoppingFragment
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -42,6 +44,13 @@ class ShoppingDaoTest {
     @After
     fun teardown() {
         database.close()
+    }
+
+    @Test
+    fun testLaunchFragmentInHiltContainer(){
+        launchFragmentInHiltContainer<ShoppingFragment> {
+
+        }
     }
 
 
