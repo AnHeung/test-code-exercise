@@ -17,6 +17,8 @@ inline fun <reified T : Fragment> launchFragmentInHiltContainer(
     fragmentFactory : FragmentFactory? = null,
     crossinline action: T.() -> Unit = {}
 ) {
+    //각 어플리케이션은 메인 액티비티가 필요하고 테스트 환경에서 기본적으로 없으므로 여기다가 명시해서 사용한다.
+    //실제 프래그먼트를 붙일 액티비티를 실행하기 위해서 (메인으로 가정하고 띄울 액티비티)
     val mainActivityIntent = Intent.makeMainActivity(
         ComponentName(
             ApplicationProvider.getApplicationContext(),
@@ -24,6 +26,7 @@ inline fun <reified T : Fragment> launchFragmentInHiltContainer(
         )
     ).putExtra("androidx.fragment.app.testing.FragmentScenario.EmptyFragmentActivity.THEME_EXTRAS_BUNDLE_KEY", themeResId)
 
+    //액티비티 시나리오를 통해 인텐트와 함께 액티비티를 띄우고 액티비티 참조를 얻을 수 있다.
     ActivityScenario.launch<HiltTestActivity>(mainActivityIntent).onActivity { activity->
 
         fragmentFactory?.let {
